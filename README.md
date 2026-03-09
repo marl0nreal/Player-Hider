@@ -29,6 +29,13 @@ A lightweight Minecraft plugin that allows players to hide or show other players
 ```yaml
 storage:
   type: LOCAL # LOCAL, H2, MYSQL
+  
+mysql:
+  host: localhost
+  port: 3306
+  database: minecraft
+  username: root
+  password: password
 
 world: "world"
 slot: 8
@@ -38,12 +45,26 @@ items:
   all:
     material: LIME_DYE
     display-name: "&aAll players visible &7(Right-click)"
+    lore:
+      - "&7Click to switch"
+      - "&7the mode"
   none:
     material: GRAY_DYE
     display-name: "&cNo players visible &7(Right-click)"
+    lore:
+      - "&7Click to switch"
+      - "&7the mode"
   vip:
     material: PURPLE_DYE
     display-name: "&5VIPs only visible &7(Right-click)"
+    lore:
+      - "&7Click to switch"
+      - "&7the mode"
+
+sound:
+  name: ENTITY_CHICKEN_EGG
+  volume: 0.3
+  pitch: 1
 ```
 
 ## Permissions
