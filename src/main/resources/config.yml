@@ -1,0 +1,83 @@
+# -------------------------------------------------------
+# PlayerHider Configuration
+# -------------------------------------------------------
+
+storage:
+  # Storage backend to use for saving player preferences.
+  # LOCAL  - Stores data in a local YAML file (no setup required)
+  # H2     - Stores data in an embedded H2 database file (no setup required)
+  # MYSQL  - Stores data in an external MySQL database (requires setup below)
+  type: LOCAL
+
+# MySQL connection settings.
+# Only used when storage.type is set to MYSQL.
+mysql:
+  host: localhost       # IP address or hostname of the MySQL server
+  port: 3306            # Port the MySQL server is running on (default: 3306)
+  database: minecraft   # Name of the database to use
+  username: root        # MySQL user with access to the database
+  password: password    # Password for the MySQL user
+
+# The world in which the hotbar item will be given to players.
+# Players in other worlds will not receive the item.
+world: "world"
+
+# The hotbar slot the item will be placed in (0 = first slot, 8 = last slot).
+slot: 8
+
+# Cooldown between item clicks in milliseconds.
+# Prevents players from spamming the mode switch.
+# Example: 1000 = 1 second, 2000 = 2 seconds
+click-cooldown: 1000
+
+# -------------------------------------------------------
+# Hotbar Items
+# -------------------------------------------------------
+# Each mode has its own item displayed in the hotbar.
+#   all  - All players are visible (default mode)
+#   none - No players are visible
+#   vip  - Only players with the 'playerhider.vip' permission are visible
+#
+# material        - Minecraft material name (must be a valid Material enum value)
+# display-name     - Display name of the item (supports & color codes)
+# lore            - Lines of lore shown in the item tooltip (supports & color codes)
+# amount          - Stack size of the item (1-64)
+# unbreakable     - Whether the item shows as unbreakable
+# hide-flags       - Whether to hide all item flags (enchantments, attributes, etc.)
+# glow            - Whether the item has an enchantment glow effect
+# custom-model-data - Custom model data value for resource pack support
+# enchantments    - Map of enchantment names to levels (e.g. SHARPNESS: 1)
+#                    Only applied if glow is false, otherwise glow takes priority
+# -------------------------------------------------------
+items:
+  all:
+    material: LIME_DYE
+    display-name: "&aAll players visible &7(Right-click)"
+    lore:
+      - "&7Click to switch"
+      - "&7the mode"
+  none:
+    material: GRAY_DYE
+    display-name: "&cNo players visible &7(Right-click)"
+    lore:
+      - "&7Click to switch"
+      - "&7the mode"
+  vip:
+    material: PURPLE_DYE
+    display-name: "&5VIPs only visible &7(Right-click)"
+    lore:
+      - "&7Click to switch"
+      - "&7the mode"
+
+# -------------------------------------------------------
+# Sound
+# -------------------------------------------------------
+# Sound played when a player switches their visibility mode.
+# name   - Minecraft sound name (must be a valid Sound enum value)
+# volume - Volume of the sound (0.0 - 1.0)
+# pitch  - Pitch of the sound (0.5 = low, 1.0 = normal, 2.0 = high)
+# -------------------------------------------------------
+sound:
+  name: ENTITY_CHICKEN_EGG
+  volume: 0.3
+  pitch: 1

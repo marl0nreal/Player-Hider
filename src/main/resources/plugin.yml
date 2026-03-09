@@ -1,0 +1,10 @@
+name: PlayerHider
+version: '${project.version}'
+main: me.marlonreal.playerhider.PlayerHider
+api-version: '1.21'
+description: "Allows players to hide or show other players using a hotbar item."
+authors: [ marlonreal ]
+permissions:
+  playerhider.vip:
+    description: "Allows the player to be seen by others in VIP-only mode."
+    default: false
