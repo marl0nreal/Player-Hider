@@ -1,6 +1,7 @@
 package me.marlonreal.playerhider.storage;
 
 
+import com.zaxxer.hikari.HikariDataSource;
 import me.marlonreal.playerhider.PlayerHider;
 import me.marlonreal.playerhider.manager.ConfigManager;
 
@@ -9,36 +10,33 @@ import java.util.UUID;
 
 public class MySQLStorage implements Storage {
 
-    private final Connection connection;
+    private final HikariDataSource hikari;
 
     public MySQLStorage(PlayerHider plugin) throws Exception {
-
-        try {
-            Class.forName("me.marlonreal.playerhider.libs.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new Exception("MySQL driver class not found", e);
-        }
-
         ConfigManager config = plugin.getConfigManager();
 
-        connection = DriverManager.getConnection(
-                "jdbc:mysql://" + config.getMysqlHost() + ":" + config.getMysqlPort() + "/" + config.getMysqlDatabase(),
-                config.getMysqlUsername(),
-                config.getMysqlPassword()
-        );
+        hikari = new HikariDataSource();
+        hikari.setDataSourceClassName("com.mysql.cj.jdbc.MysqlDataSource");
+        hikari.addDataSourceProperty("serverName", config.getMysqlHost());
+        hikari.addDataSourceProperty("port", config.getMysqlPort());
+        hikari.addDataSourceProperty("databaseName", config.getMysqlDatabase());
+        hikari.addDataSourceProperty("user", config.getMysqlUsername());
+        hikari.addDataSourceProperty("password", config.getMysqlPassword());
 
-        try (PreparedStatement ps = connection.prepareStatement(
-                "CREATE TABLE IF NOT EXISTS playerhider (uuid VARCHAR(36) PRIMARY KEY, mode INT)"
-        )) {
+        try (Connection connection = hikari.getConnection();
+             PreparedStatement ps = connection.prepareStatement(
+                     "CREATE TABLE IF NOT EXISTS playerhider (uuid VARCHAR(36) PRIMARY KEY, mode INT)"
+             )) {
             ps.executeUpdate();
         }
     }
 
     @Override
     public void saveMode(UUID uuid, int mode) {
-        try (PreparedStatement ps = connection.prepareStatement(
-                "REPLACE INTO playerhider (uuid, mode) VALUES (?, ?)"
-        )) {
+        try (Connection connection = hikari.getConnection();
+             PreparedStatement ps = connection.prepareStatement(
+                     "REPLACE INTO playerhider (uuid, mode) VALUES (?, ?)"
+             )) {
             ps.setString(1, uuid.toString());
             ps.setInt(2, mode);
             ps.executeUpdate();
@@ -49,9 +47,10 @@ public class MySQLStorage implements Storage {
 
     @Override
     public int loadMode(UUID uuid) {
-        try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT mode FROM playerhider WHERE uuid=?"
-        )) {
+        try (Connection connection = hikari.getConnection();
+             PreparedStatement ps = connection.prepareStatement(
+                     "SELECT mode FROM playerhider WHERE uuid=?"
+             )) {
             ps.setString(1, uuid.toString());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt("mode");
@@ -63,8 +62,6 @@ public class MySQLStorage implements Storage {
 
     @Override
     public void close() {
-        try {
-            connection.close();
-        } catch (SQLException ignored) {}
+        hikari.close();
     }
 }
